@@ -2,12 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
-	"path/filepath"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"log/slog"
 )
 
 func NewSearchCmd(flagStartingPoint string, scanner Scanner) *cobra.Command {
@@ -30,9 +28,6 @@ func search(flagStartingPoint string, scanner Scanner) RunE {
 			return err
 		}
 		slog.Debug(fmt.Sprintf("found %d files", len(files)))
-		for _, file := range files {
-			slog.Info(filepath.Join(file.Path, file.Name))
-		}
 		return nil
 	}
 }

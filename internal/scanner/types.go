@@ -1,11 +1,22 @@
 package scanner
 
-import "github.com/alican-uelger/deep-scan/internal/git"
+import (
+	"github.com/alican-uelger/deep-scan/internal/git"
+	"github.com/alican-uelger/deep-scan/internal/matcher"
+)
 
 type GitClient interface {
 	ListGroupProjects(group string) ([]git.Project, error)
 	ListRepositoryTree(projectID any) ([]git.TreeNode, error)
 	GetRawFile(project git.Project, path string) ([]byte, error)
+}
+
+type Storage interface {
+	ReadFile(string) ([]byte, error)
+	ReadDir(string) ([]string, error)
+	IsDir(string) (bool, error)
+	MkdirAll(string) error
+	WriteFile(string, []byte) error
 }
 
 type Sops interface {
@@ -27,6 +38,11 @@ type File struct {
 	Type FileType
 }
 
+type FileMatch struct {
+	File
+	Matches []matcher.MatchResult
+}
+
 type SearchOptions struct {
 	Name                []string
 	NameContains        []string
@@ -40,7 +56,7 @@ type SearchOptions struct {
 	SopsKey             []string
 	ExcludeName         []string
 	ExcludeNameContains []string
-	ExcludeDir          []string
-	ExcludeDirContains  []string
+	ExcludePath         []string
+	ExcludePathContains []string
 	ExcludeContent      []string
 }

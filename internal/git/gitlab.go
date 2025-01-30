@@ -3,6 +3,7 @@ package git
 import (
 	"fmt"
 	"log/slog"
+	"path/filepath"
 
 	"gitlab.com/gitlab-org/api/client-go"
 )
@@ -50,7 +51,7 @@ func (g *Gitlab) GetProjectByName(name string) (Project, error) {
 }
 
 func (g *Gitlab) GetRawFile(project Project, path string) ([]byte, error) {
-	slog.Debug(fmt.Sprintf("fetching raw file: %s", path))
+	slog.Debug(fmt.Sprintf("fetching raw file: %s", filepath.Join(project.PathWithNamespace, path)))
 	content, _, err := g.client.GetRawFile(project.ID, path, &gitlab.GetRawFileOptions{})
 	return content, err
 }

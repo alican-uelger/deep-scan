@@ -17,11 +17,11 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-# Go workspace file
+# Go workspace fileMatch
 go.work
 go.work.sum
 
-# env file
+# env fileMatch
 .env
 
 .coverage.html

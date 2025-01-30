@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+type FileType = string
+
+const (
+	YAML   FileType = "yaml"
+	DotEnv FileType = "dotenv"
+)
+
 type SopsAPI interface {
 	DecryptFile([]byte, string) ([]byte, error)
 }
@@ -39,13 +46,13 @@ func (s *Sops) DecryptFile(path string) (string, error) {
 	return string(decryptedContent), nil
 }
 
-func getFileType(path string) string {
+func getFileType(path string) FileType {
 	fileType := strings.Replace(filepath.Ext(path), ".", "", 1)
 	switch fileType {
 	case "env":
-		return "dotenv"
+		return DotEnv
 	case "yml":
-		return "yaml"
+		return YAML
 	}
 	return fileType
 }

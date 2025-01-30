@@ -40,8 +40,8 @@ func searchOptions() scanner.SearchOptions {
 		SopsKey:             viper.GetStringSlice(flagSopsKey),
 		ExcludeName:         viper.GetStringSlice(flagExcludeName),
 		ExcludeNameContains: viper.GetStringSlice(flagExcludeNameContains),
-		ExcludeDir:          viper.GetStringSlice(flagExcludePath),
-		ExcludeDirContains:  viper.GetStringSlice(flagExcludePathContains),
+		ExcludePath:         viper.GetStringSlice(flagExcludePath),
+		ExcludePathContains: viper.GetStringSlice(flagExcludePathContains),
 		ExcludeContent:      viper.GetStringSlice(flagExcludeContent),
 	}
 }

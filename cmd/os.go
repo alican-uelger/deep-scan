@@ -9,7 +9,7 @@ import (
 const flagDir = "dir"
 
 type Scanner interface {
-	Search(string, scanner.SearchOptions) ([]scanner.File, error)
+	Search(string, scanner.SearchOptions) ([]scanner.FileMatch, error)
 }
 
 func NewOsScannerCmd() *cobra.Command {

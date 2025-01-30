@@ -4,13 +4,11 @@ go 1.23.5
 
 require (
 	github.com/getsops/sops/v3 v3.9.4
-	github.com/google/go-github/v50 v50.2.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
 	gitlab.com/gitlab-org/api/client-go v0.120.0
-	golang.org/x/oauth2 v0.25.0
 	gomodules.xyz/memfs v0.0.1
 )
 
@@ -58,13 +56,11 @@ require (
 	github.com/aws/smithy-go v1.22.2 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
-	github.com/census-instrumentation/opencensus-proto v0.4.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudflare/circl v1.5.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20250121191232-2f005788dc42 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.6 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/envoyproxy/go-control-plane v0.13.4 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.3 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
@@ -126,11 +122,11 @@ require (
 	go.opentelemetry.io/otel/sdk v1.34.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
-	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
 	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/oauth2 v0.25.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/term v0.28.0 // indirect

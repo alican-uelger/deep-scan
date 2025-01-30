@@ -2,11 +2,11 @@
 
 ## Overview
 
-Deep Scan is a powerful command-line tool designed to search for files based on filenames, paths, content, and encrypted secrets (SOPS). It works seamlessly in both local file systems and GitLab repositories.
+Deep Scan is a powerful command-line tool designed to search for files based on filenames, paths, content, and encrypted secrets (SOPS). It works seamlessly in both local fileMatch systems and GitLab repositories.
 
 ## Features
 
-- **Fast and flexible file scanning** in local directories or GitLab organizations.
+- **Fast and flexible fileMatch scanning** in local directories or GitLab organizations.
 - **Advanced filtering** by filename, directory path, content, and regex patterns.
 - **SOPS decryption support** for handling encrypted files.
 - **Exclusion filters** to refine search results.

@@ -5,32 +5,27 @@ import (
 	"log/slog"
 	"path/filepath"
 
+	"github.com/alican-uelger/deep-scan/internal/matcher"
 	"github.com/alican-uelger/deep-scan/internal/sops"
 	"github.com/alican-uelger/deep-scan/internal/storage"
 )
 
-type Storage interface {
-	ReadFile(string) ([]byte, error)
-	ReadDir(string) ([]string, error)
-	IsDir(string) (bool, error)
-	MkdirAll(string) error
-	WriteFile(string, []byte) error
-}
-
 type Os struct {
-	Storage Storage
-	Sops    Sops
+	Base
 }
 
 func NewOs() *Os {
 	return &Os{
-		Storage: storage.NewOs(),
-		Sops:    sops.New(storage.NewMem()),
+		Base: Base{
+			Storage:     storage.NewOs(),
+			Sops:        sops.New(storage.NewMem()),
+			TextMatcher: matcher.NewText(),
+		},
 	}
 }
 
-func (s *Os) Search(dir string, options SearchOptions) ([]File, error) {
-	result := []File{}
+func (s *Os) Search(dir string, options SearchOptions) ([]FileMatch, error) {
+	var result []FileMatch
 
 	dirEntries, err := s.Storage.ReadDir(dir)
 	if err != nil {
@@ -51,28 +46,46 @@ func (s *Os) Search(dir string, options SearchOptions) ([]File, error) {
 			result = append(result, nestedFiles...)
 			continue
 		}
-		file := File{
-			Name: filepath.Base(entry),
-			Path: filepath.Dir(entry),
-			Type: FILE, // TODO: detect if sops secret
+		fileMatch := FileMatch{
+			File: File{
+				Name: filepath.Base(entry),
+				Path: filepath.Dir(entry),
+				Type: FILE, // TODO: detect if sops secret
+			},
+			Matches: nil,
 		}
+
 		rawContent, err := s.Storage.ReadFile(entry)
 		if err != nil {
 			slog.Warn(fmt.Sprintf("reading file content failed %s - skipping %s and continueing", err, entry))
 			continue
 		}
 		content := string(rawContent)
-		if options.Sops && file.Type == SOPS_SECRET {
-			content, err = decryptContent(file, rawContent, s.Storage, s.Sops)
+		if options.Sops && fileMatch.Type == SOPS_SECRET {
+			content, err = s.decryptContent(fileMatch.File, rawContent)
 			if err != nil {
 				slog.Error(fmt.Sprintf("decrypt error: %s", err))
 				continue
 			}
 		}
-		if !filterFile(file, content, options) {
+		// filter files
+		ok, matches := s.filter(fileMatch.File, content, options)
+		if !ok {
 			continue
 		}
-		result = append(result, file)
+		fileMatch.Matches = matches
+		slog.Debug(fmt.Sprintf("found file: %s", entry))
+		printFileMatch(fileMatch)
+		result = append(result, fileMatch)
 	}
 	return result, nil
+}
+
+func (s *Os) decryptContent(file File, rawContent []byte) (string, error) {
+	content := string(rawContent)
+	content, err := s.Sops.DecryptFile(file.Path)
+	if err != nil {
+		return content, fmt.Errorf("decrypt error: %s", err)
+	}
+	return content, nil
 }
