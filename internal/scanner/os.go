@@ -39,12 +39,14 @@ func (s *Os) Search(dir string, options SearchOptions) ([]File, error) {
 	for _, entry := range dirEntries {
 		isDir, err := s.Storage.IsDir(entry)
 		if err != nil {
-			return result, err
+			slog.Warn(fmt.Sprintf("is directory function failed with err %s - skipping %s and continueing", err, entry))
+			continue
 		}
 		if isDir {
 			nestedFiles, err := s.Search(entry, options)
 			if err != nil {
-				return result, err
+				slog.Warn(fmt.Sprintf("nested directory search failed with err %s - skipping %s and continueing", err, entry))
+				continue
 			}
 			result = append(result, nestedFiles...)
 			continue
@@ -56,7 +58,8 @@ func (s *Os) Search(dir string, options SearchOptions) ([]File, error) {
 		}
 		rawContent, err := s.Storage.ReadFile(entry)
 		if err != nil {
-			return result, err
+			slog.Warn(fmt.Sprintf("reading file content failed %s - skipping %s and continueing", err, entry))
+			continue
 		}
 		content := string(rawContent)
 		if options.Sops && file.Type == SOPS_SECRET {
