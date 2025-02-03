@@ -18,10 +18,6 @@ func NewSearchCmd(flagStartingPoint string, scanner Scanner) *cobra.Command {
 		Use:  "search",
 		RunE: search(flagStartingPoint, scanner),
 		PreRun: func(cmd *cobra.Command, args []string) {
-			err := cmd.MarkPersistentFlagRequired(flagStartingPoint)
-			if err != nil {
-				slog.Error(fmt.Sprintf("Error marking flag as required: %v", err))
-			}
 			bindFlags(cmd)
 		},
 	}
