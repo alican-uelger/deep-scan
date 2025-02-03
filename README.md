@@ -20,10 +20,8 @@ DeepScan is a powerful command-line tool designed to search for files based on f
 Ensure you have Go installed, then run:
 
 ```sh
-make build
+go build
 ```
-
-This will generate the binary in `./dist/local/deep-scan`.
 
 ## Commands
 
@@ -138,12 +136,4 @@ Then run:
 
 ```sh
 deep-scan github search -o my-org
-```
-
-## Running Tests
-
-### Unit Tests
-
-```sh
-make test-unit
 ```
