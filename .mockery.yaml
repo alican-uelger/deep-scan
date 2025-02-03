@@ -1,0 +1,20 @@
+---
+with-expecter: True
+all: True
+recursive: True
+
+inpackage: True
+dir: "{{.InterfaceDir}}"
+filename: "{{ .InterfaceName | camelcase | firstLower }}_mock.go"
+mockname: "{{.InterfaceName}}Mock"
+
+exclude:
+  - resources
+  - docs
+  - test
+
+packages:
+  github.com/alican-uelger/deep-scan:
+    config:
+      all: True
+      recursive: True
