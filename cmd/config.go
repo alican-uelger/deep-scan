@@ -25,6 +25,7 @@ const (
 	flagExcludePath         = "exclude-path"
 	flagExcludePathContains = "exclude-path-contains"
 	flagExcludeContent      = "exclude-content"
+	flagLogLate             = "log-late"
 )
 
 const (
@@ -49,6 +50,7 @@ func searchOptions() scanner.SearchOptions {
 		ExcludePath:         viper.GetStringSlice(flagExcludePath),
 		ExcludePathContains: viper.GetStringSlice(flagExcludePathContains),
 		ExcludeContent:      viper.GetStringSlice(flagExcludeContent),
+		LogLate:             viper.GetBool(flagLogLate),
 	}
 }
 

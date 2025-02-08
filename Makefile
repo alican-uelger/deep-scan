@@ -74,3 +74,9 @@ test-unit:
 		-shuffle=on \
 		-tags=unit -v ./...
 	go tool cover -html=${COVER_PROFILE} -o ${COVER_OUTPUT}
+
+.PHONY: benchmark
+# Run benchmarks and output to a file
+benchmark:
+	@echo "Running benchmarks..."
+	@go test -tags="unit int end2end" -bench . -benchmem ./... | tee benchmark_results.txt

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/alican-uelger/deep-scan/internal/matcher"
 	"path/filepath"
+	"sync"
 )
 
 const contextLength = 15
@@ -179,17 +180,41 @@ func (s *Base) decryptContent(file File, encryptedContent []byte) (string, error
 	return decryptedContent, nil
 }
 
+var printMu sync.Mutex
+
+func printFileMatches(fileMatches []FileMatch) {
+	go func() {
+		printMu.Lock()
+		defer printMu.Unlock()
+		result := ""
+		for _, fileMatch := range fileMatches {
+			result += buildFileMatchOutput(fileMatch)
+		}
+		fmt.Print(result)
+	}()
+}
+
 func printFileMatch(fileMatch FileMatch) {
-	fmt.Println("+----------------------------------------+")
-	fmt.Println("Match:\t" + filepath.Join(fileMatch.Path, fileMatch.Name))
+	go func() {
+		printMu.Lock()
+		defer printMu.Unlock()
+		fmt.Print(buildFileMatchOutput(fileMatch))
+	}()
+
+}
+
+func buildFileMatchOutput(fileMatch FileMatch) string {
+	result := "+----------------------------------------+\n"
+	result += "Match:\t" + filepath.Join(fileMatch.Path, fileMatch.Name) + "\n"
 	for i, m := range fileMatch.Matches {
-		fmt.Printf("\tLine:%d, ColStart:%d, ColEnd:%d\n", m.Line, m.StartCol, m.EndCol)
-		fmt.Printf("\t'%s'\n", m.CompressedFormattedSnippet)
+		result += fmt.Sprintf("\tLine:%d, ColStart:%d, ColEnd:%d\n", m.Line, m.StartCol, m.EndCol)
+		result += fmt.Sprintf("\t'%s'\n", m.CompressedFormattedSnippet)
 		if i < len(fileMatch.Matches)-1 {
-			fmt.Println()
+			result += "\n"
 		}
 	}
-	fmt.Println("+----------------------------------------+")
+	result += "+----------------------------------------+\n\n"
+	return result
 }
 
 // This prevents the unnecessary downloading/reading files by checking if the content is needed

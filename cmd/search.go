@@ -125,4 +125,6 @@ func addSearchFlags(flagSet *pflag.FlagSet) {
 	flagSet.StringSlice(flagExcludePath, []string{}, "Exclude specific directories (exact match)")
 	flagSet.StringSlice(flagExcludePathContains, []string{}, "Exclude directories containing this string")
 	flagSet.StringSlice(flagExcludeContent, []string{}, "Exclude files containing specific content")
+
+	flagSet.Bool(flagLogLate, false, "This flag will log the results after the search is complete. This is useful for large searches, when you want to be as fast as possible.")
 }

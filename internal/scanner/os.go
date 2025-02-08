@@ -88,8 +88,13 @@ func (s *Os) Search(dir string, options SearchOptions) ([]FileMatch, error) {
 		}
 		fileMatch.Matches = append(fileMatch.Matches, matches...)
 		slog.Debug(fmt.Sprintf("found file: %s", entry))
-		printFileMatch(fileMatch)
+		if !options.LogLate {
+			printFileMatch(fileMatch)
+		}
 		result = append(result, fileMatch)
+	}
+	if options.LogLate {
+		printFileMatches(result)
 	}
 	return result, nil
 }

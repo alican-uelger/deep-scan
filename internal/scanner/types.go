@@ -60,4 +60,5 @@ type SearchOptions struct {
 	ExcludePath         []string
 	ExcludePathContains []string
 	ExcludeContent      []string
+	LogLate             bool
 }

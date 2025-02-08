@@ -20,3 +20,12 @@ func TestAddOsScannerFlags(t *testing.T) {
 	addOsScannerFlags(cmd.PersistentFlags())
 	assert.NotNil(t, cmd.PersistentFlags().Lookup(flagDir))
 }
+
+func BenchmarkReadAndAnalyzeFiles(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		cmd := NewOsScannerCmd()
+		cmd.SetArgs([]string{"--dir", "."})
+		err := cmd.Execute()
+		assert.NoError(b, err)
+	}
+}
