@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"path/filepath"
+	"sync"
 
 	"github.com/alican-uelger/deep-scan/internal/matcher"
 	"github.com/alican-uelger/deep-scan/internal/sops"
@@ -27,72 +28,79 @@ func NewOs() *Os {
 
 func (s *Os) Search(dir string, options SearchOptions) ([]FileMatch, error) {
 	var result []FileMatch
+	var mu sync.Mutex
+	var wg sync.WaitGroup
 
 	dirEntries, err := s.Storage.ReadDir(dir)
 	if err != nil {
 		return result, err
 	}
+
 	for _, entry := range dirEntries {
-		isDir, err := s.Storage.IsDir(entry)
-		if err != nil {
-			slog.Warn(fmt.Sprintf("is directory function failed with err %s - skipping %s and continueing", err, entry))
-			continue
-		}
-		if isDir {
-			nestedFiles, err := s.Search(entry, options)
+		wg.Add(1)
+		go func(entry string) {
+			defer wg.Done()
+			isDir, err := s.Storage.IsDir(entry)
 			if err != nil {
-				slog.Warn(fmt.Sprintf("nested directory search failed with err %s - skipping %s and continueing", err, entry))
-				continue
+				slog.Warn(fmt.Sprintf("is directory function failed with err %s - skipping %s and continuing", err, entry))
+				return
 			}
-			result = append(result, nestedFiles...)
-			continue
-		}
-		fileMatch := FileMatch{
-			File: File{
-				Name: filepath.Base(entry),
-				Path: filepath.Dir(entry),
-				Type: FILE, // TODO: detect if sops secret
-			},
-			Matches: nil,
-		}
-		content := ""
-		// read file content if needed
-		if isFileContentNeeded(options) {
-			rawContent, err := s.Storage.ReadFile(entry)
-			if err != nil {
-				slog.Warn(fmt.Sprintf("reading file content failed %s - skipping %s and continueing", err, entry))
-				continue
-			}
-			content = string(rawContent) // set content to raw content
-			// check if sops is enabled
-			if options.Sops {
-				// check the encrypted content for sops-key
-				ok, matches := s.filterSopsKey(content, options)
-				if !ok {
-					continue
+			if isDir {
+				nestedFiles, err := s.Search(entry, options)
+				if err != nil {
+					slog.Warn(fmt.Sprintf("nested directory search failed with err %s - skipping %s and continuing", err, entry))
+					return
 				}
-				fileMatch.Matches = append(fileMatch.Matches, matches...)
-				// detect weather the file is sops-secret file which is encrypted or not
-				decryptedContent, err := s.decryptContent(fileMatch.File)
-				if err == nil {
-					slog.Debug(fmt.Sprintf("found sops secret file: %s", entry))
-					fileMatch.Type = SOPS_SECRET // set file type to sops secret
-					content = decryptedContent   // set content to decrypted content
+				mu.Lock()
+				result = append(result, nestedFiles...)
+				mu.Unlock()
+				return
+			}
+			fileMatch := FileMatch{
+				File: File{
+					Name: filepath.Base(entry),
+					Path: filepath.Dir(entry),
+					Type: FILE,
+				},
+				Matches: nil,
+			}
+			content := ""
+			if isFileContentNeeded(options) {
+				rawContent, err := s.Storage.ReadFile(entry)
+				if err != nil {
+					slog.Warn(fmt.Sprintf("reading file content failed %s - skipping %s and continuing", err, entry))
+					return
+				}
+				content = string(rawContent)
+				if options.Sops {
+					ok, matches := s.filterSopsKey(content, options)
+					if !ok {
+						return
+					}
+					fileMatch.Matches = append(fileMatch.Matches, matches...)
+					decryptedContent, err := s.decryptContent(fileMatch.File)
+					if err == nil {
+						slog.Debug(fmt.Sprintf("found sops secret file: %s", entry))
+						fileMatch.Type = SOPS_SECRET
+						content = decryptedContent
+					}
 				}
 			}
-		}
-		// filter files
-		ok, matches := s.filter(fileMatch.File, content, options)
-		if !ok {
-			continue
-		}
-		fileMatch.Matches = append(fileMatch.Matches, matches...)
-		slog.Debug(fmt.Sprintf("found file: %s", entry))
-		if !options.LogLate {
-			printFileMatch(fileMatch)
-		}
-		result = append(result, fileMatch)
+			ok, matches := s.filter(fileMatch.File, content, options)
+			if !ok {
+				return
+			}
+			fileMatch.Matches = append(fileMatch.Matches, matches...)
+			slog.Debug(fmt.Sprintf("found file: %s", entry))
+			if !options.LogLate {
+				printFileMatch(fileMatch)
+			}
+			mu.Lock()
+			result = append(result, fileMatch)
+			mu.Unlock()
+		}(entry)
 	}
+	wg.Wait()
 	if options.LogLate {
 		printFileMatches(result)
 	}
