@@ -45,8 +45,8 @@ func (s *Base) filter(file File, content string, options SearchOptions) (bool, [
 	if len(options.ExcludeName) > 0 {
 		for _, name := range options.ExcludeName {
 			_, exactMatch, matches := s.TextMatcher.Match(file.Name, name, matcher.TextSearch, contextLength)
-			results = append(results, matches...)
 			if exactMatch {
+				results = append(results, matches...)
 				return false, results
 			}
 		}
@@ -54,8 +54,8 @@ func (s *Base) filter(file File, content string, options SearchOptions) (bool, [
 	if len(options.ExcludeNameContains) > 0 {
 		for _, nameContains := range options.ExcludeNameContains {
 			matched, _, matches := s.TextMatcher.Match(file.Name, nameContains, matcher.TextSearch, contextLength)
-			results = append(results, matches...)
 			if matched {
+				results = append(results, matches...)
 				return false, results
 			}
 		}
@@ -63,17 +63,17 @@ func (s *Base) filter(file File, content string, options SearchOptions) (bool, [
 	if len(options.ExcludePath) > 0 {
 		for _, p := range options.ExcludePath {
 			_, exactMatch, matches := s.TextMatcher.Match(file.Path, p, matcher.TextSearch, contextLength)
-			results = append(results, matches...)
 			if exactMatch {
+				results = append(results, matches...)
 				return false, results
 			}
 		}
 	}
 	if len(options.ExcludePathContains) > 0 {
 		for _, pContains := range options.ExcludePathContains {
-			matched, _, matches := s.TextMatcher.Match(file.Name, pContains, matcher.TextSearch, contextLength)
-			results = append(results, matches...)
+			matched, _, matches := s.TextMatcher.Match(file.Path, pContains, matcher.TextSearch, contextLength)
 			if matched {
+				results = append(results, matches...)
 				return false, results
 			}
 		}
@@ -81,8 +81,8 @@ func (s *Base) filter(file File, content string, options SearchOptions) (bool, [
 	if len(options.ExcludeContent) > 0 {
 		for _, c := range options.ExcludeContent {
 			matched, _, matches := s.TextMatcher.Match(content, c, matcher.TextSearch, contextLength)
-			results = append(results, matches...)
 			if matched {
+				results = append(results, matches...)
 				return false, results
 			}
 		}

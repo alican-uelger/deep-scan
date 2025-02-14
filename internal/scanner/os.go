@@ -100,6 +100,7 @@ func (s *Os) Search(dir string, options SearchOptions) ([]FileMatch, error) {
 			mu.Unlock()
 		}(entry)
 	}
+	slog.Debug("wating")
 	wg.Wait()
 	if options.LogLate {
 		printFileMatches(result)
