@@ -29,7 +29,8 @@ const (
 )
 
 const (
-	flagOutput = "output"
+	flagOutput     = "output"
+	flagOutputName = "output-name"
 )
 
 func searchOptions() scanner.SearchOptions {

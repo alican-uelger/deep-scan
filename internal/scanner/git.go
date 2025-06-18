@@ -62,6 +62,11 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 					},
 					Matches: nil,
 				}
+				ok, matches := s.filterFile(fileMatch.File, options)
+				if !ok {
+					return
+				}
+
 				content := ""
 				if isFileContentNeeded(options) {
 					rawContent, err := s.Client.GetRawFile(project, treeEntry.Path)
@@ -71,11 +76,11 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 					}
 					content = string(rawContent)
 					if options.Sops {
-						ok, matches := s.filterSopsKey(content, options)
+						ok, sopsKeyMatches := s.filterSopsKey(content, options)
 						if !ok {
 							return
 						}
-						fileMatch.Matches = append(fileMatch.Matches, matches...)
+						fileMatch.Matches = append(fileMatch.Matches, sopsKeyMatches...)
 						decryptedContent, err := s.decryptContent(fileMatch.File, rawContent)
 						if err == nil {
 							slog.Debug(fmt.Sprintf("found sops secret file: %s", entry))
@@ -84,15 +89,18 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 						}
 					}
 				}
-				ok, matches := s.filter(fileMatch.File, content, options)
+
+				if fileMatch.File.Type != SOPS_SECRET && options.SopsOnly {
+					return
+				}
+
+				ok, contentMatches := s.filterContent(content, options)
 				if !ok {
 					return
 				}
-				fileMatch.Matches = matches
+				matches = append(matches, contentMatches...)
+				fileMatch.Matches = append(fileMatch.Matches, matches...)
 				slog.Debug(fmt.Sprintf("found file: %s", entry))
-				if !options.LogLate {
-					printFileMatch(fileMatch)
-				}
 				mu.Lock()
 				result = append(result, fileMatch)
 				mu.Unlock()
@@ -100,9 +108,6 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 		}
 	}
 	wg.Wait()
-	if options.LogLate {
-		printFileMatches(result)
-	}
 	return result, nil
 }
 

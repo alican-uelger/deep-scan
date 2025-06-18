@@ -33,13 +33,8 @@ func (s *Base) filterSopsKey(content string, options SearchOptions) (bool, []mat
 	return true, results
 }
 
-func (s *Base) filter(file File, content string, options SearchOptions) (bool, []matcher.MatchResult) {
+func (s *Base) filterFile(file File, options SearchOptions) (bool, []matcher.MatchResult) {
 	var results []matcher.MatchResult
-
-	// when sops-only is enabled, only search for sops files
-	if file.Type != SOPS_SECRET && options.SopsOnly {
-		return false, results
-	}
 
 	// excludes
 	if len(options.ExcludeName) > 0 {
@@ -72,15 +67,6 @@ func (s *Base) filter(file File, content string, options SearchOptions) (bool, [
 	if len(options.ExcludePathContains) > 0 {
 		for _, pContains := range options.ExcludePathContains {
 			matched, _, matches := s.TextMatcher.Match(file.Path, pContains, matcher.TextSearch, contextLength)
-			if matched {
-				results = append(results, matches...)
-				return false, results
-			}
-		}
-	}
-	if len(options.ExcludeContent) > 0 {
-		for _, c := range options.ExcludeContent {
-			matched, _, matches := s.TextMatcher.Match(content, c, matcher.TextSearch, contextLength)
 			if matched {
 				results = append(results, matches...)
 				return false, results
@@ -143,6 +129,23 @@ func (s *Base) filter(file File, content string, options SearchOptions) (bool, [
 			matched, _, matches := s.TextMatcher.Match(file.Path, pRegex, matcher.RegexSearch, contextLength)
 			results = append(results, matches...)
 			if !matched {
+				return false, results
+			}
+		}
+	}
+
+	return true, results
+}
+
+func (s *Base) filterContent(content string, options SearchOptions) (bool, []matcher.MatchResult) {
+	var results []matcher.MatchResult
+
+	// excludes
+	if len(options.ExcludeContent) > 0 {
+		for _, c := range options.ExcludeContent {
+			matched, _, matches := s.TextMatcher.Match(content, c, matcher.TextSearch, contextLength)
+			if matched {
+				results = append(results, matches...)
 				return false, results
 			}
 		}

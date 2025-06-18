@@ -67,12 +67,20 @@ func output(outputType string, files []scanner.FileMatch) error {
 	}
 }
 
+func outputName() string {
+	n := viper.GetString(flagOutputName)
+	if n == "" {
+		n = "output"
+	}
+	return n
+}
+
 func jsonOutput(files []scanner.FileMatch) error {
 	filesJson, err := json.MarshalIndent(files, "", "\t")
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile("output.json", filesJson, 0644)
+	err = os.WriteFile(outputName()+".json", filesJson, 0644)
 	if err != nil {
 		return err
 	}
@@ -85,7 +93,7 @@ func yamlOutput(files []scanner.FileMatch) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile("output.yaml", filesYaml, 0644)
+	err = os.WriteFile(outputName()+".yaml", filesYaml, 0644)
 	if err != nil {
 		return err
 	}

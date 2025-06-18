@@ -125,7 +125,7 @@ func TestBaseFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockTextMatcher.On("Match", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(true, true, []matcher.MatchResult{}).Maybe()
-			result, _ := base.filter(file, content, tt.options)
+			result, _ := base.filterFile(file, content, tt.options)
 			assert.Equal(t, tt.expected, result)
 		})
 	}
