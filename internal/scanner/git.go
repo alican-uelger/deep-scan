@@ -109,7 +109,7 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 func (s *Git) decryptContent(file File, rawContent []byte) (string, error) {
 	fileLocation := filepath.Join(file.Path, file.Name)
 	content := string(rawContent)
-	err := s.Storage.MkdirAll(fileLocation)
+	err := s.Storage.MkdirAll(file.Path)
 	if err != nil {
 		return content, fmt.Errorf("decrypt: mkdirall error: %s", err)
 	}
