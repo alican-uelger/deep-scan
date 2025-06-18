@@ -91,10 +91,6 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 					}
 				}
 
-				if fileMatch.File.Type != SOPS_SECRET && options.SopsOnly {
-					return
-				}
-
 				ok, contentMatches := s.filterContent(content, options)
 				if !ok {
 					return
@@ -102,6 +98,8 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 				matches = append(matches, contentMatches...)
 				fileMatch.Matches = append(fileMatch.Matches, matches...)
 				slog.Debug(fmt.Sprintf("found file: %s", entry))
+				printFileMatches(result)
+
 				mu.Lock()
 				result = append(result, fileMatch)
 				mu.Unlock()
@@ -115,7 +113,7 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 func (s *Git) decryptContent(file File, rawContent []byte) (string, error) {
 	fileLocation := filepath.Join(file.Path, file.Name)
 	content := string(rawContent)
-	err := s.Storage.MkdirAll(fileLocation)
+	err := s.Storage.MkdirAll(file.Path)
 	if err != nil {
 		return content, fmt.Errorf("decrypt: mkdirall error: %s", err)
 	}
