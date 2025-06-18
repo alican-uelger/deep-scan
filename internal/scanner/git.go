@@ -78,6 +78,7 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 					if options.Sops {
 						ok, sopsKeyMatches := s.filterSopsKey(content, options)
 						if !ok {
+							slog.Debug("sops key not found, skipping file")
 							return
 						}
 						fileMatch.Matches = append(fileMatch.Matches, sopsKeyMatches...)
