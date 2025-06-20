@@ -86,7 +86,7 @@ func (s *Os) Search(dir string, options SearchOptions) ([]FileMatch, error) {
 					}
 				}
 			}
-			ok, matches := s.filter(fileMatch.File, content, options)
+			ok, matches := s.filterContent(content, options)
 			if !ok {
 				return
 			}
