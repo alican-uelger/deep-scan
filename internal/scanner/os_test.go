@@ -17,9 +17,6 @@ func TestOsSearchSuccessfulSearch(t *testing.T) {
 	mockStorage.
 		On("IsDir", "dir/file.txt").
 		Return(false, nil)
-	mockStorage.
-		On("ReadFile", "dir/file.txt").
-		Return([]byte("file content"), nil)
 
 	mockSops := NewSopsMock(t)
 	mockTestMatcher := NewTextMatcherMock(t)

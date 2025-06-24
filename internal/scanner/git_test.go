@@ -9,7 +9,6 @@ import (
 	"github.com/alican-uelger/deep-scan/internal/git"
 	"github.com/alican-uelger/deep-scan/internal/sops"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestGitSearchSuccessfulSearch(t *testing.T) {
@@ -21,9 +20,6 @@ func TestGitSearchSuccessfulSearch(t *testing.T) {
 	mockClient.
 		On("ListRepositoryTree", mockProject).
 		Return([]git.TreeNode{{Path: "file.txt", IsTree: false}}, nil)
-	mockClient.
-		On("GetRawFile", mock.Anything, "file.txt").
-		Return([]byte("file content"), nil)
 
 	mockTextMatcher := NewTextMatcherMock(t)
 	mockStorage := NewStorageMock(t)

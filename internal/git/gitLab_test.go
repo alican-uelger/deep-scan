@@ -5,6 +5,7 @@ package git
 import (
 	"errors"
 	"github.com/stretchr/testify/mock"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -121,7 +122,7 @@ func TestGetRawFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			clientMock := NewGitLabAPIMock(t)
-			clientMock.On("GetRawFile", tt.project.Name, tt.path, mock.Anything).Return(tt.mockResponse, nil, tt.mockError)
+			clientMock.On("GetRawFile", strconv.Itoa(tt.project.ID), tt.path, mock.Anything).Return(tt.mockResponse, nil, tt.mockError)
 
 			g := GitLab{
 				client: clientMock,

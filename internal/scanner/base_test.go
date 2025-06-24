@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestBaseFilter(t *testing.T) {
+func TestBaseFilterFile(t *testing.T) {
 	mockTextMatcher := NewTextMatcherMock(t)
 	mockStorage := NewStorageMock(t)
 	mockSops := NewSopsMock(t)
@@ -22,7 +22,6 @@ func TestBaseFilter(t *testing.T) {
 	}
 
 	file := File{Name: "file.txt", Path: "org/repo", Type: FILE}
-	content := "file content"
 
 	tests := []struct {
 		name     string
@@ -54,13 +53,6 @@ func TestBaseFilter(t *testing.T) {
 			name: "ExcludePathContains",
 			options: SearchOptions{
 				ExcludePathContains: []string{"repo"},
-			},
-			expected: false,
-		},
-		{
-			name: "ExcludeContent",
-			options: SearchOptions{
-				ExcludeContent: []string{"file content"},
 			},
 			expected: false,
 		},
@@ -106,6 +98,42 @@ func TestBaseFilter(t *testing.T) {
 			},
 			expected: true,
 		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockTextMatcher.On("Match", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(true, true, []matcher.MatchResult{}).Maybe()
+			result, _ := base.filterFile(file, tt.options)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestBaseFilterContent(t *testing.T) {
+	mockTextMatcher := NewTextMatcherMock(t)
+	mockStorage := NewStorageMock(t)
+	mockSops := NewSopsMock(t)
+
+	base := &Base{
+		TextMatcher: mockTextMatcher,
+		Storage:     mockStorage,
+		Sops:        mockSops,
+	}
+
+	content := "file content"
+
+	tests := []struct {
+		name     string
+		options  SearchOptions
+		expected bool
+	}{
+		{
+			name: "ExcludeContent",
+			options: SearchOptions{
+				ExcludeContent: []string{"file content"},
+			},
+			expected: false,
+		},
 		{
 			name: "Content",
 			options: SearchOptions{
@@ -125,7 +153,7 @@ func TestBaseFilter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockTextMatcher.On("Match", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(true, true, []matcher.MatchResult{}).Maybe()
-			result, _ := base.filter(file, content, tt.options)
+			result, _ := base.filterContent(content, tt.options)
 			assert.Equal(t, tt.expected, result)
 		})
 	}

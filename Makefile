@@ -30,7 +30,7 @@ clean:
 
 .PHONY: mocks
 mocks:
-	go run github.com/vektra/mockery/v2@v2.51.0
+	go run github.com/vektra/mockery/v2@v2.53.4
 
 # build tags end2end, integration and unit. E.g.:
 # //go:build end2end

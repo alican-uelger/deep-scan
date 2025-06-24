@@ -1,4 +1,5 @@
 ---
+version: 1.64.8
 
 # Options for analysis running.
 run:
@@ -17,7 +18,10 @@ run:
 # Output configuration options.
 output:
   formats:
-    - format: colored-tab
+    json:
+      enabled: true
+    text:
+      enabled: true
   # Sort results by: filepath, line and column.
   sort-results: true
 
@@ -31,84 +35,42 @@ linters:
   disable:
     - staticcheck
   enable:
-    # Checks that the code does not contain non-ASCII identifiers.
     - asciicheck
-    # Checks whether HTTP response body is closed successfully.
     - bodyclose
-    # Checks declaration order and count of types, constants, variables and
-    # functions.
     - decorder
-    # Checks types passed to the json encoding functions.
     - errchkjson
-    # Checks code that will cause problems with the error wrapping scheme
-    # introduced in Go 1.13.
     - errorlint
-    # Checks for long functions.
     - funlen
-    # Checks import order and makes it always deterministic.
     - gci
-    # Checks that go compiler directive comments (//go:) are valid.
     - gocheckcompilerdirectives
-    # Checks that no global variables exist.
     - gochecknoglobals
-    # Checks that no init functions are present in Go code.
     - gochecknoinits
-    # Checks and computes the cognitive complexity of functions.
     - gocognit
-    # Checks repeated strings that could be replaced by a constant.
     - goconst
-    # Checks and computes the cyclomatic complexity of functions.
     - gocyclo
-    # Check if comments end in a period.
     - godot
-    # Checks whether code was gofmt-ed. By default this tool runs with -s option
-    # to check for code simplification.
     - gofmt
-    # Checks import statements are formatted according to the 'goimport'
-    # command. Reformat imports in autofix mode.
-    # - goimports
-    # Inspects source code for security problems.
     - gosec
-    # Finds commonly misspelled English words in comments.
     - misspell
-    # Reports deeply nested if statements.
     - nestif
-    # Finds slice declarations that could potentially be pre-allocated.
     - prealloc
-    # Find code that shadows one of Go's predeclared identifiers.
     - predeclared
-    # Fast, configurable, extensible, flexible, and beautiful linter for Go.
-    # Drop-in replacement of golint.
     - revive
-    # Checks usage of github.com/stretchr/testify.
     - testifylint
-    # Remove unnecessary type conversions.
     - unconvert
-    # Reports unused function parameters.
     - unparam
-    # Checks that the length of a variable's name matches its scope.
-    # - varnamelen
 
 # Configure detailed linting issues.
 issues:
-  # Maximum issues count per one linter.
-  # Set to 0 to disable.
-  # Default: 50
   max-issues-per-linter: 100
-  # Maximum count of issues with the same text.
-  # Set to 0 to disable.
-  # Default: 3
   max-same-issues: 10
-  # Fix found issues (if it's supported by the linter).
-  # TODO: Test this option before using it.
-  # fix: true
   exclude:
     - "don't use an underscore in package name"
     - "Log is a global variable"
     - "Validator is a global variable"
     - "type switch on error will fail on wrapped errors. Use errors.As to check for specific errors"
   exclude-dirs:
-  - test/mocks
+    - test/mocks
   exclude-rules:
     - path: '(.+)_test\.go'
       linters:
@@ -118,5 +80,5 @@ issues:
         - gochecknoglobals
     - path: '(.+)_mock\.go'
       linters:
-        disable-all: true
-
+        - gochecknoglobals
+        - gochecknoinits
