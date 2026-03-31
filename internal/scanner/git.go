@@ -34,9 +34,19 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 
-	projects, err := s.Client.ListGroupProjects(org)
-	if err != nil {
-		return result, err
+	var projects []git.Project
+	var err error
+	if options.Project != "" {
+		project, err := s.Client.GetProjectByName(options.Project)
+		if err != nil {
+			return result, err
+		}
+		projects = []git.Project{project}
+	} else {
+		projects, err = s.Client.ListGroupProjects(org)
+		if err != nil {
+			return result, err
+		}
 	}
 
 	for _, project := range projects {

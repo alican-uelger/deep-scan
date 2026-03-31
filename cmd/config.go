@@ -51,6 +51,7 @@ func searchOptions() scanner.SearchOptions {
 		ExcludePathContains: viper.GetStringSlice(flagExcludePathContains),
 		ExcludeContent:      viper.GetStringSlice(flagExcludeContent),
 		LogLate:             viper.GetBool(flagLogLate),
+		Project:             viper.GetString(flagGitProject),
 	}
 }
 

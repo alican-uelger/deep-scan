@@ -127,3 +127,66 @@ func TestGitSearchEmptyRepositoryTree(t *testing.T) {
 	assert.Equal(t, expected, result)
 	assert.Nil(t, err)
 }
+
+func TestGitSearchByProject_Success(t *testing.T) {
+	mockProject := git.Project{ID: 2, PathWithNamespace: "owner/repo"}
+	mockClient := NewGitClientMock(t)
+	mockClient.
+		On("GetProjectByName", "owner/repo").
+		Return(mockProject, nil)
+	mockClient.
+		On("ListRepositoryTree", mockProject).
+		Return([]git.TreeNode{{Path: "main.go", IsTree: false}}, nil)
+
+	mockTextMatcher := NewTextMatcherMock(t)
+	mockStorage := NewStorageMock(t)
+
+	g := &Git{
+		Client: mockClient,
+		Base: Base{
+			Storage:     mockStorage,
+			Sops:        sops.New(mockStorage),
+			TextMatcher: mockTextMatcher,
+		},
+	}
+
+	result, err := g.Search("", SearchOptions{Project: "owner/repo"})
+
+	mockClient.AssertNumberOfCalls(t, "ListGroupProjects", 0)
+	mockClient.AssertNumberOfCalls(t, "GetProjectByName", 1)
+
+	expected := []FileMatch{
+		{File: File{Name: "main.go", Path: "owner/repo", Type: FILE}},
+	}
+	assert.Equal(t, expected, result)
+	assert.Nil(t, err)
+}
+
+func TestGitSearchByProject_NotFound(t *testing.T) {
+	mockClient := NewGitClientMock(t)
+	mockClient.
+		On("GetProjectByName", "owner/nonexistent").
+		Return(git.Project{}, errors.New("project not found: owner/nonexistent"))
+
+	mockStorage := NewStorageMock(t)
+	mockTextMatcher := NewTextMatcherMock(t)
+
+	g := &Git{
+		Client: mockClient,
+		Base: Base{
+			Storage:     mockStorage,
+			Sops:        sops.New(mockStorage),
+			TextMatcher: mockTextMatcher,
+		},
+	}
+
+	result, err := g.Search("", SearchOptions{Project: "owner/nonexistent"})
+
+	mockClient.AssertNumberOfCalls(t, "ListGroupProjects", 0)
+	mockClient.AssertNumberOfCalls(t, "GetProjectByName", 1)
+
+	var expected []FileMatch
+	assert.Equal(t, expected, result)
+	assert.EqualError(t, err, "project not found: owner/nonexistent")
+}
+
