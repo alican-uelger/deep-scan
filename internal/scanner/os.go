@@ -80,7 +80,7 @@ func (s *Os) Search(dir string, options SearchOptions) ([]FileMatch, error) {
 				}
 				content = string(rawContent)
 				if options.Sops {
-					ok, _ := s.filterSopsKey(content, options)
+					ok, _ := s.filterSopsContentBeforeDecryption(content, options)
 					if !ok {
 						return
 					}

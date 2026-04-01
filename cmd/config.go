@@ -9,23 +9,23 @@ import (
 )
 
 const (
-	flagName                = "name"
-	flagNameContains        = "name-contains"
-	flagNameRegex           = "name-regex"
-	flagPath                = "path"
-	flagPathContains        = "path-contains"
-	flagPathRegex           = "path-regex"
-	flagContent             = "content"
-	flagContentRegex        = "content-regex"
-	flagSops                = "sops"
-	flagSopsOnly            = "sops-only"
-	flagSopsKey             = "sops-key"
-	flagExcludeName         = "exclude-name"
-	flagExcludeNameContains = "exclude-name-contains"
-	flagExcludePath         = "exclude-path"
-	flagExcludePathContains = "exclude-path-contains"
-	flagExcludeContent      = "exclude-content"
-	flagLogLate             = "log-late"
+	flagName                        = "name"
+	flagNameContains                = "name-contains"
+	flagNameRegex                   = "name-regex"
+	flagPath                        = "path"
+	flagPathContains                = "path-contains"
+	flagPathRegex                   = "path-regex"
+	flagContent                     = "content"
+	flagContentRegex                = "content-regex"
+	flagSops                        = "sops"
+	flagSopsOnly                    = "sops-only"
+	flagSopsContentBeforeDecryption = "sops-content-before-decryption"
+	flagExcludeName                 = "exclude-name"
+	flagExcludeNameContains         = "exclude-name-contains"
+	flagExcludePath                 = "exclude-path"
+	flagExcludePathContains         = "exclude-path-contains"
+	flagExcludeContent              = "exclude-content"
+	flagLogLate                     = "log-late"
 )
 
 const (
@@ -34,23 +34,23 @@ const (
 
 func searchOptions() scanner.SearchOptions {
 	return scanner.SearchOptions{
-		Name:                viper.GetStringSlice(flagName),
-		NameContains:        viper.GetStringSlice(flagNameContains),
-		NameRegex:           viper.GetStringSlice(flagNameRegex),
-		Path:                viper.GetStringSlice(flagPath),
-		PathContains:        viper.GetStringSlice(flagPathContains),
-		PathRegex:           viper.GetStringSlice(flagPathRegex),
-		Content:             viper.GetStringSlice(flagContent),
-		ContentRegex:        viper.GetStringSlice(flagContentRegex),
-		Sops:                viper.GetBool(flagSops),
-		SopsOnly:            viper.GetBool(flagSopsOnly),
-		SopsKey:             viper.GetStringSlice(flagSopsKey),
-		ExcludeName:         viper.GetStringSlice(flagExcludeName),
-		ExcludeNameContains: viper.GetStringSlice(flagExcludeNameContains),
-		ExcludePath:         viper.GetStringSlice(flagExcludePath),
-		ExcludePathContains: viper.GetStringSlice(flagExcludePathContains),
-		ExcludeContent:      viper.GetStringSlice(flagExcludeContent),
-		LogLate:             viper.GetBool(flagLogLate),
+		Name:                        viper.GetStringSlice(flagName),
+		NameContains:                viper.GetStringSlice(flagNameContains),
+		NameRegex:                   viper.GetStringSlice(flagNameRegex),
+		Path:                        viper.GetStringSlice(flagPath),
+		PathContains:                viper.GetStringSlice(flagPathContains),
+		PathRegex:                   viper.GetStringSlice(flagPathRegex),
+		Content:                     viper.GetStringSlice(flagContent),
+		ContentRegex:                viper.GetStringSlice(flagContentRegex),
+		Sops:                        viper.GetBool(flagSops),
+		SopsOnly:                    viper.GetBool(flagSopsOnly),
+		SopsContentBeforeDecryption: viper.GetStringSlice(flagSopsContentBeforeDecryption),
+		ExcludeName:                 viper.GetStringSlice(flagExcludeName),
+		ExcludeNameContains:         viper.GetStringSlice(flagExcludeNameContains),
+		ExcludePath:                 viper.GetStringSlice(flagExcludePath),
+		ExcludePathContains:         viper.GetStringSlice(flagExcludePathContains),
+		ExcludeContent:              viper.GetStringSlice(flagExcludeContent),
+		LogLate:                     viper.GetBool(flagLogLate),
 	}
 }
 

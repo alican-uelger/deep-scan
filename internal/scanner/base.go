@@ -123,10 +123,10 @@ func (s *Base) filterFile(file File, options SearchOptions) (bool, []matcher.Mat
 	return true, results
 }
 
-func (s *Base) filterSopsKey(content string, options SearchOptions) (bool, []matcher.MatchResult) {
+func (s *Base) filterSopsContentBeforeDecryption(content string, options SearchOptions) (bool, []matcher.MatchResult) {
 	var results []matcher.MatchResult
-	if len(options.SopsKey) > 0 {
-		for _, c := range options.SopsKey {
+	if len(options.SopsContentBeforeDecryption) > 0 {
+		for _, c := range options.SopsContentBeforeDecryption {
 			matched, _, matches := s.TextMatcher.Match(content, c, matcher.TextSearch, contextLength)
 			results = append(results, matches...)
 			if !matched {
