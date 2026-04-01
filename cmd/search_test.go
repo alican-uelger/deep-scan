@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,3 +34,26 @@ func TestAddSearchFlags(t *testing.T) {
 		assert.NotNil(t, cmd.PersistentFlags().Lookup(flag), "Flag %s should be present", flag)
 	}
 }
+
+func TestSearch_NeitherOrgNorProject(t *testing.T) {
+	t.Cleanup(viper.Reset)
+
+	scanner := NewScannerMock(t)
+	cmd := NewSearchCmd(flagGitOrg, scanner)
+	cmd.SetArgs([]string{})
+	err := cmd.Execute()
+
+	assert.ErrorContains(t, err, "provide at least one of")
+}
+
+func TestSearch_BothOrgAndProject(t *testing.T) {
+	t.Cleanup(viper.Reset)
+
+	scanner := NewScannerMock(t)
+	cmd := NewSearchCmd(flagGitOrg, scanner)
+	cmd.SetArgs([]string{"--org", "myorg", "--project", "owner/repo"})
+	err := cmd.Execute()
+
+	assert.ErrorContains(t, err, "mutually exclusive")
+}
+

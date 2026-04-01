@@ -9,6 +9,7 @@ type GitClient interface {
 	ListGroupProjects(group string) ([]git.Project, error)
 	ListRepositoryTree(project git.Project) ([]git.TreeNode, error)
 	GetRawFile(project git.Project, path string) ([]byte, error)
+	GetProjectByName(name string) (git.Project, error)
 }
 
 type Storage interface {
@@ -61,4 +62,5 @@ type SearchOptions struct {
 	ExcludePathContains []string
 	ExcludeContent      []string
 	LogLate             bool
+	Project             string
 }

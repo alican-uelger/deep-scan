@@ -20,6 +20,62 @@ func (_m *GitClientMock) EXPECT() *GitClientMock_Expecter {
 	return &GitClientMock_Expecter{mock: &_m.Mock}
 }
 
+// GetProjectByName provides a mock function with given fields: name
+func (_m *GitClientMock) GetProjectByName(name string) (git.Project, error) {
+	ret := _m.Called(name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetProjectByName")
+	}
+
+	var r0 git.Project
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (git.Project, error)); ok {
+		return rf(name)
+	}
+	if rf, ok := ret.Get(0).(func(string) git.Project); ok {
+		r0 = rf(name)
+	} else {
+		r0 = ret.Get(0).(git.Project)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(name)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GitClientMock_GetProjectByName_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetProjectByName'
+type GitClientMock_GetProjectByName_Call struct {
+	*mock.Call
+}
+
+// GetProjectByName is a helper method to define mock.On call
+//   - name string
+func (_e *GitClientMock_Expecter) GetProjectByName(name interface{}) *GitClientMock_GetProjectByName_Call {
+	return &GitClientMock_GetProjectByName_Call{Call: _e.mock.On("GetProjectByName", name)}
+}
+
+func (_c *GitClientMock_GetProjectByName_Call) Run(run func(name string)) *GitClientMock_GetProjectByName_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *GitClientMock_GetProjectByName_Call) Return(_a0 git.Project, _a1 error) *GitClientMock_GetProjectByName_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *GitClientMock_GetProjectByName_Call) RunAndReturn(run func(string) (git.Project, error)) *GitClientMock_GetProjectByName_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetRawFile provides a mock function with given fields: project, path
 func (_m *GitClientMock) GetRawFile(project git.Project, path string) ([]byte, error) {
 	ret := _m.Called(project, path)

@@ -36,9 +36,18 @@ const (
 func search(flagStartingPoint string, scanner Scanner) RunE {
 	return func(_ *cobra.Command, _ []string) error {
 		options := searchOptions()
-		startingPoint := viper.GetString(flagStartingPoint)
-		slog.Debug(fmt.Sprintf("running search with %s=%s, options: %v", flagStartingPoint, startingPoint, options))
-		files, err := scanner.Search(startingPoint, options)
+		org := viper.GetString(flagStartingPoint)
+		project := viper.GetString(flagGitProject)
+
+		if org == "" && project == "" {
+			return fmt.Errorf("provide at least one of --%s or --%s", flagGitOrg, flagGitProject)
+		}
+		if org != "" && project != "" {
+			return fmt.Errorf("--%s and --%s are mutually exclusive", flagGitOrg, flagGitProject)
+		}
+
+		slog.Debug(fmt.Sprintf("running search with %s=%s, %s=%s, options: %v", flagStartingPoint, org, flagGitProject, project, options))
+		files, err := scanner.Search(org, options)
 		if err != nil {
 			slog.Error(fmt.Sprintf("Error searching for files: %v", err))
 			return err

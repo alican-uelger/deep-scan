@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	flagLogLevel = "log-level"
-	flagGitOrg   = "org"
+	flagLogLevel   = "log-level"
+	flagGitOrg     = "org"
+	flagGitProject = "project"
 )
 
 // NewRootCmd creates the root command for the CLI application.
@@ -34,6 +35,7 @@ func NewRootCmd() *cobra.Command {
 
 func addGitScannerFlags(flagSet *pflag.FlagSet) {
 	flagSet.StringP(flagGitOrg, "o", "", "The git org to scan")
+	flagSet.StringP(flagGitProject, "r", "", "The specific project/repository to scan (owner/repo or group/project)")
 }
 
 func addRootFlags(flagSet *pflag.FlagSet) {
