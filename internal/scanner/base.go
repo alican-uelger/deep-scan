@@ -185,33 +185,30 @@ func (s *Base) decryptContent(file File, encryptedContent []byte) (string, error
 
 var printMu sync.Mutex
 
-func printFileMatches(fileMatches []FileMatch) {
-	go func() {
-		printMu.Lock()
-		defer printMu.Unlock()
-		result := ""
-		for _, fileMatch := range fileMatches {
-			result += buildFileMatchOutput(fileMatch)
-		}
-		fmt.Print(result)
-	}()
+func printFileMatches(fileMatches []FileMatch, options SearchOptions) {
+	printMu.Lock()
+	defer printMu.Unlock()
+	result := ""
+	for _, fileMatch := range fileMatches {
+		result += buildFileMatchOutput(fileMatch, options.NoSnippets)
+	}
+	fmt.Print(result)
 }
 
-func printFileMatch(fileMatch FileMatch) {
-	go func() {
-		printMu.Lock()
-		defer printMu.Unlock()
-		fmt.Print(buildFileMatchOutput(fileMatch))
-	}()
-
+func printFileMatch(fileMatch FileMatch, options SearchOptions) {
+	printMu.Lock()
+	defer printMu.Unlock()
+	fmt.Print(buildFileMatchOutput(fileMatch, options.NoSnippets))
 }
 
-func buildFileMatchOutput(fileMatch FileMatch) string {
+func buildFileMatchOutput(fileMatch FileMatch, noSnippets bool) string {
 	result := "+----------------------------------------+\n"
 	result += "Match:\t" + filepath.Join(fileMatch.Path, fileMatch.Name) + "\n"
 	for i, m := range fileMatch.Matches {
 		result += fmt.Sprintf("\tLine:%d, ColStart:%d, ColEnd:%d\n", m.Line, m.StartCol, m.EndCol)
-		result += fmt.Sprintf("\t'%s'\n", m.CompressedFormattedSnippet)
+		if !noSnippets {
+			result += fmt.Sprintf("\t'%s'\n", m.CompressedFormattedSnippet)
+		}
 		if i < len(fileMatch.Matches)-1 {
 			result += "\n"
 		}

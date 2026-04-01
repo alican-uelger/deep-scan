@@ -20,6 +20,7 @@ const (
 	flagSops                        = "sops"
 	flagSopsOnly                    = "sops-only"
 	flagSopsContentBeforeDecryption = "sops-content-before-decryption"
+	flagNoSnippets                  = "no-snippets"
 	flagExcludeName                 = "exclude-name"
 	flagExcludeNameContains         = "exclude-name-contains"
 	flagExcludePath                 = "exclude-path"
@@ -29,7 +30,8 @@ const (
 )
 
 const (
-	flagOutput = "output"
+	flagOutput     = "output"
+	flagOutputName = "output-name"
 )
 
 func searchOptions() scanner.SearchOptions {
@@ -50,6 +52,7 @@ func searchOptions() scanner.SearchOptions {
 		ExcludePath:                 viper.GetStringSlice(flagExcludePath),
 		ExcludePathContains:         viper.GetStringSlice(flagExcludePathContains),
 		ExcludeContent:              viper.GetStringSlice(flagExcludeContent),
+		NoSnippets:                  viper.GetBool(flagNoSnippets),
 		LogLate:                     viper.GetBool(flagLogLate),
 	}
 }

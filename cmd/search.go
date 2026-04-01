@@ -46,7 +46,8 @@ func search(flagStartingPoint string, scanner Scanner) RunE {
 		slog.Debug(fmt.Sprintf("found %d files", len(files)))
 		o := viper.GetString(flagOutput)
 		if o != "" {
-			err = output(o, files)
+			name := viper.GetString(flagOutputName)
+			err = output(o, name, files)
 			if err != nil {
 				slog.Error(fmt.Sprintf("Error outputting files: %v", err))
 				return err
@@ -56,45 +57,52 @@ func search(flagStartingPoint string, scanner Scanner) RunE {
 	}
 }
 
-func output(outputType string, files []scanner.FileMatch) error {
+func output(outputType string, name string, files []scanner.FileMatch) error {
 	switch strings.ToLower(outputType) {
 	case JSON:
-		return jsonOutput(files)
+		return jsonOutput(name, files)
 	case YAML:
-		return yamlOutput(files)
+		return yamlOutput(name, files)
 	default:
 		return fmt.Errorf("unsupported output type: %s", outputType)
 	}
 }
 
-func jsonOutput(files []scanner.FileMatch) error {
+func jsonOutput(name string, files []scanner.FileMatch) error {
+	if name == "" {
+		name = "output.json"
+	}
 	filesJson, err := json.MarshalIndent(files, "", "\t")
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile("output.json", filesJson, 0644)
+	err = os.WriteFile(name, filesJson, 0644)
 	if err != nil {
 		return err
 	}
-	slog.Info("Output written to output.json")
+	slog.Info(fmt.Sprintf("Output written to %s", name))
 	return nil
 }
 
-func yamlOutput(files []scanner.FileMatch) error {
+func yamlOutput(name string, files []scanner.FileMatch) error {
+	if name == "" {
+		name = "output.yaml"
+	}
 	filesYaml, err := yaml.Marshal(files)
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile("output.yaml", filesYaml, 0644)
+	err = os.WriteFile(name, filesYaml, 0644)
 	if err != nil {
 		return err
 	}
-	slog.Info("Output written to output.yaml")
+	slog.Info(fmt.Sprintf("Output written to %s", name))
 	return nil
 }
 
 func addOutputFLags(flagSet *pflag.FlagSet) {
 	flagSet.String(flagOutput, "", "Output to file (JSON, YAML)")
+	flagSet.String(flagOutputName, "", "Output file name (default: output.json / output.yaml)")
 }
 
 func addSearchFlags(flagSet *pflag.FlagSet) {
@@ -116,6 +124,9 @@ func addSearchFlags(flagSet *pflag.FlagSet) {
 	flagSet.BoolP(flagSops, "s", false, "Search for SOPS-encrypted files")
 	flagSet.Bool(flagSopsOnly, false, "Search for files that are only SOPS-encrypted")
 	flagSet.StringSlice(flagSopsContentBeforeDecryption, []string{}, "Search for content in SOPS-encrypted files before decryption")
+
+	// output flags
+	flagSet.Bool(flagNoSnippets, false, "Suppress match snippets in output")
 
 	// exclude filename flags
 	flagSet.StringSlice(flagExcludeName, []string{}, "Exclude files with specific names (exact match)")

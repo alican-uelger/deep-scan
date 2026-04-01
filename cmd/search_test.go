@@ -25,6 +25,7 @@ func TestAddSearchFlags(t *testing.T) {
 		flagPath, flagPathContains, flagPathRegex,
 		flagContent, flagContentRegex,
 		flagSops, flagSopsContentBeforeDecryption,
+		flagNoSnippets,
 		flagExcludeName, flagExcludeNameContains,
 		flagExcludePath, flagExcludePathContains, flagExcludeContent,
 	}

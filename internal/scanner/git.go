@@ -105,7 +105,7 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 				fileMatch.Matches = matches
 				slog.Debug(fmt.Sprintf("found file: %s", entry))
 				if !options.LogLate {
-					printFileMatch(fileMatch)
+					printFileMatch(fileMatch, options)
 				}
 				mu.Lock()
 				result = append(result, fileMatch)
@@ -115,7 +115,7 @@ func (s *Git) Search(org string, options SearchOptions) ([]FileMatch, error) {
 	}
 	wg.Wait()
 	if options.LogLate {
-		printFileMatches(result)
+		printFileMatches(result, options)
 	}
 	return result, nil
 }
