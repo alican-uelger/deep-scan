@@ -45,22 +45,22 @@ type FileMatch struct {
 }
 
 type SearchOptions struct {
-	Name                []string
-	NameContains        []string
-	NameRegex           []string
-	Path                []string
-	PathContains        []string
-	PathRegex           []string
-	Content             []string
-	ContentRegex        []string
-	Sops                bool
-	SopsOnly            bool
-	SopsKey             []string
-	ExcludeName         []string
-	ExcludeNameContains []string
-	ExcludePath         []string
-	ExcludePathContains []string
-	ExcludeContent      []string
-	LogLate             bool
-	Project             string
+	Name                        []string
+	NameContains                []string
+	NameRegex                   []string
+	Path                        []string
+	PathContains                []string
+	PathRegex                   []string
+	Content                     []string
+	ContentRegex                []string
+	Sops                        bool
+	SopsOnly                    bool
+	SopsContentBeforeDecryption []string
+	ExcludeName                 []string
+	ExcludeNameContains         []string
+	ExcludePath                 []string
+	ExcludePathContains         []string
+	ExcludeContent              []string
+	LogLate                     bool
+	Project                     string
 }

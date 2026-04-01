@@ -25,7 +25,7 @@ func TestAddSearchFlags(t *testing.T) {
 		flagName, flagNameContains, flagNameRegex,
 		flagPath, flagPathContains, flagPathRegex,
 		flagContent, flagContentRegex,
-		flagSops, flagSopsKey,
+		flagSops, flagSopsContentBeforeDecryption,
 		flagExcludeName, flagExcludeNameContains,
 		flagExcludePath, flagExcludePathContains, flagExcludeContent,
 	}
@@ -56,4 +56,3 @@ func TestSearch_BothOrgAndProject(t *testing.T) {
 
 	assert.ErrorContains(t, err, "mutually exclusive")
 }
-

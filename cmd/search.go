@@ -124,7 +124,7 @@ func addSearchFlags(flagSet *pflag.FlagSet) {
 	// sops flags
 	flagSet.BoolP(flagSops, "s", false, "Search for SOPS-encrypted files")
 	flagSet.Bool(flagSopsOnly, false, "Search for files that are only SOPS-encrypted")
-	flagSet.StringSlice(flagSopsKey, []string{}, "Search for files encrypted with a specific key")
+	flagSet.StringSlice(flagSopsContentBeforeDecryption, []string{}, "Search for content in SOPS-encrypted files before decryption")
 
 	// exclude filename flags
 	flagSet.StringSlice(flagExcludeName, []string{}, "Exclude files with specific names (exact match)")
