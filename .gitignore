@@ -29,4 +29,5 @@ coverage.out
 
 benchmark_results.txt
 
-.idea
+.idea/
+vendor/
