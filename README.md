@@ -2,18 +2,24 @@
 
 ## Description
 
-DeepScan is a powerful command-line tool designed to search for files based on filenames, paths, content, and encrypted secrets (SOPS). It works seamlessly in both local file systems and GitLab repositories.
+DeepScan is a powerful command-line tool designed to search for files based on filenames, paths, content, and encrypted secrets (SOPS). It works seamlessly in local file systems, GitHub, and GitLab repositories.
 
 ## Features
 
 - **OS File Search**: Search local directories based on filename, path, or content.
 - **SOPS Decrypted Search**: Handle and search within SOPS-encrypted files.
-- **GitHub Search**: Scan GitHub organizations for matching files.
-- **GitLab Search**: Scan GitLab organizations for matching files.
+- **GitHub Search**: Scan GitHub organizations or individual repositories for matching files.
+- **GitLab Search**: Scan GitLab groups or individual projects for matching files.
 - **Advanced Filtering**: Apply filters for filenames, paths, content, and regex patterns.
 - **Exclusion Filters**: Refine search results by excluding specific files or directories.
 
 ## Installation
+
+### Install via Go
+
+```sh
+go install github.com/alican-uelger/deep-scan@latest
+```
 
 ### Build from Source
 
@@ -28,8 +34,8 @@ go build
 | Command | Description | Flags |
 |---------|-------------|-------|
 | `os search` | Scans a specified directory for matching files. | `-d, --dir` The root directory to scan [default: "."] |
-| `gitlab search` | Scans a GitLab organization for matching files. | `-o, --org` The GitLab organization to scan |
-| `github search` | Scans a GitHub organization for matching files. | `-o, --org` The GitHub organization to scan |
+| `gitlab search` | Scans a GitLab group for matching files. | `-o, --org` The GitLab group to scan · `-r, --project` A specific GitLab project to scan (mutually exclusive with `--org`) |
+| `github search` | Scans a GitHub organization for matching files. | `-o, --org` The GitHub organization to scan · `-r, --project` A specific GitHub repository to scan (mutually exclusive with `--org`) |
 
 ### Global Flags
 
@@ -82,13 +88,13 @@ These flags apply to all commands:
     --exclude-content        Exclude files containing specific content
 ```
 
-
 #### Output
 
 ```sh
-    --output                Output to file (JSON, YAML)
+    --output     Output results to file (json, yaml)
+    --log-late   Log results after the search completes instead of streaming them.
+                 Useful for large searches where maximum throughput is preferred.
 ```
-    
 
 ## Examples
 
@@ -112,10 +118,16 @@ Optionally, you can set the GitLab host (default is `gitlab.com`):
 export GITLAB_HOST=https://gitlab.com
 ```
 
-Then run:
+Scan an entire group:
 
 ```sh
-deep-scan gitlab search -o my-org
+deep-scan gitlab search -o my-group
+```
+
+Scan a specific project:
+
+```sh
+deep-scan gitlab search -r my-group/my-project
 ```
 
 ### GitHub Scanning
@@ -132,8 +144,35 @@ Optionally, you can set the GitHub host (default is `github.com`):
 export GITHUB_HOST=https://github.com
 ```
 
-Then run:
+Scan an entire organization:
 
 ```sh
 deep-scan github search -o my-org
 ```
+
+Scan a specific repository:
+
+```sh
+deep-scan github search -r owner/my-repo
+```
+
+### Advanced Examples
+
+Search for files named `secrets.yaml` containing `password` in a specific GitLab project:
+
+```sh
+deep-scan gitlab search -r my-group/my-project -n secrets.yaml -c password
+```
+
+Search for SOPS-encrypted files across a GitHub organization, output as JSON:
+
+```sh
+deep-scan github search -o my-org --sops-only --output json
+```
+
+Search for files matching a content regex, excluding test directories:
+
+```sh
+deep-scan os search -d . --content-regex "api[_-]?key\s*=" --exclude-path-contains test
+```
+
